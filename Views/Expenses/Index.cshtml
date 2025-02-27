@@ -1,0 +1,60 @@
+@model IEnumerable<ExpenseApp.Models.Expense>
+
+<h2>My Expenses</h2>
+
+<div>
+    <div style="margin-bottom:10px">
+    <a class="btn btn-primary" role="button" asp-controller="Expenses" asp-action="Create">+</a>
+	</div>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>@item.Description</td>
+                    <td>@item.Amount</td>
+                    <td>@item.Category</td>
+                    <td>@item.Date.ToString("yyyy-MM-dd")</td>
+					<td>@Html.ActionLink("Delete", "Delete", new { id = item.Id })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<h2>Expenses Overview</h2>
+
+<div>
+    <canvas style="max-width:450px; max-height:450px" id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('myChart');
+
+    fetch('/Expenses/GetChart')
+        .then(response => response.json())
+        .then(data => {
+            new Chart(ctx, {
+              type: 'pie',
+              data: {
+                labels: data.map(d => d.category),
+                datasets: [{
+                  label: '# of Votes',
+                  data: data.map(d => d.total),
+                  borderWidth: 1
+                }]
+              }
+            });
+        });
+</script>
